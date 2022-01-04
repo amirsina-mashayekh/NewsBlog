@@ -28,7 +28,8 @@ class Comment(models.Model):
     date = models.DateTimeField(default=datetime.now)
     text = models.TextField(max_length=2000)
     is_accepted = models.BooleanField(default=False)
-    reply = models.OneToOneField(to='Comment', on_delete=models.SET_NULL, null=True, related_name="repliedOn")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    replies = models.ForeignKey('Comment', on_delete=models.SET_NULL, null=True, related_name="repliedOn")
 
     def __str__(self):
         return f"{self.id}, " \
@@ -36,3 +37,9 @@ class Comment(models.Model):
                f"{self.date.replace(microsecond=0).isoformat(' ')}, " \
                f"{('' if self.is_accepted else 'Not') + ' Accepted'}, " \
                f"{textwrap.shorten(self.text, width=50, placeholder='...')}"
+
+
+class Ad(models.Model):
+    provider = models.CharField(max_length=50)
+    url = models.URLField()
+

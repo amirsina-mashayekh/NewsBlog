@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="{% static 'stylesheets/styles.css' %}">
+    <title>بلاگ اخبار</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <script>
+        window.onload = function() {
+            // Remove class to enable transitions
+            document.querySelector("body").classList.remove("prevent-transition-trigger");
+        };
+    </script>
+</head>
+<body class="prevent-transition-trigger">
+    <div class="navbar">
+        <a class="navbar-item active" href="index.html">
+            صفحه اصلی
+        </a>
+        <a class="navbar-item" href="news-list.html">آخرین اخبار</a>
+        <a class="navbar-item" href="#">دسته بندی‌ها</a>
+        <a class="navbar-item" href="login.html">ورود / عضویت</a>
+        <form class="search-form" method="post" action="#">
+            <input type="text" class="single-input-text" name="search" placeholder="جستجو کنید...">
+            <button type="submit" class="single-input-button">جستجو</button>
+        </form>
+    </div>
+
+    {% block body %}
+    {% endblock %}
+
+    <footer>
+        <form class="subscription-form" method="post" action="#">
+            <input type="email" class="single-input-text" name="email" placeholder="آدرس ایمیل" dir="ltr">
+            <button type="submit" class="single-input-button">اشتراک در خبرنامه</button>
+        </form>
+
+        <div class="footer-info flex-80-row-container">
+            <a href="index.html"><img class="footer-logo" src="{% static 'images/logo-full.png' %}" alt="logo"></a>
+            <div>
+                <h4>درباره ما</h4>
+                <hr>
+                <p>
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.
+                    چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است
+                    و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.
+                </p>
+            </div>
+            <div>
+                <h4>تماس با ما</h4>
+                <hr>
+                <ul>
+                    <li>
+                        پست الکترونیکی: <a href="mailto:pajuhesh80@outlook.com">pajuhesh80@outlook.com</a>
+                    </li>
+                    <li>
+                        تلفن: <a href="tel:+981198765432">01198765432</a>
+                    </li>
+                    <li>
+                        نشانی: نوشهر، خیابان یک، مجتمع دو، واحد سه
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="copyright">&copy; {% now "Y" %} AmirSina Mashayekh</div>
+    </footer>
+</body>
