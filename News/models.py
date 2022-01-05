@@ -12,11 +12,20 @@ from django.core.files.base import ContentFile
 from django.db import models
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+    url_name = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name_plural = "categories"
+
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="posts")
     importance = models.SmallIntegerField(default=0)
     publishDate = models.DateTimeField(default=datetime.now)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="posts")
     image = models.ImageField()
     article = RichTextField()
     visits = models.PositiveIntegerField(default=0)
@@ -53,7 +62,7 @@ class Comment(models.Model):
     text = models.TextField(max_length=2000)
     is_accepted = models.BooleanField(default=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    replies = models.ForeignKey('Comment', on_delete=models.SET_NULL, null=True, related_name="repliedOn")
+    replied_on = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, related_name="replies")
 
     def __str__(self):
         return f"{self.id}, " \
