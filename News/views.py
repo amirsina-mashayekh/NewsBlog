@@ -4,9 +4,9 @@ from django.shortcuts import render, get_object_or_404
 from News.models import Post, Ad
 
 
-SliderNewsCount = 3
+SliderNewsCount = 0
 LatestNewsCount = 10
-PopularNewsCount = 5
+PopularNewsCount = 0
 NewsPerPage = 12
 AdsCount = 2
 

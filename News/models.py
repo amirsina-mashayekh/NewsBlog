@@ -1,8 +1,14 @@
+import os.path
 import textwrap
+import uuid
 from datetime import datetime
+from io import BytesIO
 
+from PIL import Image
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
+from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import models
 
 
@@ -11,15 +17,33 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="posts")
     importance = models.SmallIntegerField(default=0)
     publishDate = models.DateTimeField(default=datetime.now)
-    image = models.ImageField(upload_to="images/articleMain")
+    image = models.ImageField()
     article = RichTextField()
     visits = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.id}, " \
                f"{textwrap.shorten(self.title, width=50, placeholder='...')}, " \
-               f"{self.publishDate.replace(microsecond=0).isoformat(' ')}, " \
+               f"{self.publishDate.strftime('%Y-%m-%d %H:%M:%S')}, " \
                f"{self.author.last_name}, {self.author.first_name}"
+
+    def save(self, *args, **kwargs):
+        # Resize and convert image
+        im = Image.open(self.image)
+        im = im.resize((640, int(im.height * 640 / im.width)), Image.LANCZOS)
+        out = BytesIO()
+        im.save(out, format='WEBP')
+        out.seek(0)
+
+        # Random unique name
+        now = datetime.now()
+        name = os.path.join('images',
+                            str(now.year), str(now.month), str(now.day),
+                            str(uuid.uuid4()) + '.webp')
+
+        self.image.save(name, File(ContentFile(out.read())), save=False)
+
+        super(Post, self).save(*args, **kwargs)
 
 
 class Comment(models.Model):
@@ -34,7 +58,7 @@ class Comment(models.Model):
     def __str__(self):
         return f"{self.id}, " \
                f"{self.writer}, " \
-               f"{self.date.replace(microsecond=0).isoformat(' ')}, " \
+               f"{self.date.strftime('%Y-%m-%d %H:%M:%S')}, " \
                f"{('' if self.is_accepted else 'Not') + ' Accepted'}, " \
                f"{textwrap.shorten(self.text, width=50, placeholder='...')}"
 
@@ -42,4 +66,3 @@ class Comment(models.Model):
 class Ad(models.Model):
     provider = models.CharField(max_length=50)
     url = models.URLField()
-

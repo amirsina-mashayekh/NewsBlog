@@ -17,12 +17,17 @@
 </head>
 <body class="prevent-transition-trigger">
     <div class="navbar">
-        <a class="navbar-item active" href="index.html">
-            صفحه اصلی
+        {% with request.resolver_match.url_name as url_name %}
+            <a class="navbar-item {% if url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">
+                صفحه اصلی
+            </a>
+            <a class="navbar-item {% if url_name == 'news_list' %}active{% endif %}" href="{% url 'news_list' 1 %}">
+                آخرین اخبار
+            </a>
+        {% endwith %}
+        <a class="navbar-item" href="login.html">
+            ورود / عضویت
         </a>
-        <a class="navbar-item" href="news-list.html">آخرین اخبار</a>
-        <a class="navbar-item" href="#">دسته بندی‌ها</a>
-        <a class="navbar-item" href="login.html">ورود / عضویت</a>
         <form class="search-form" method="post" action="#">
             <input type="text" class="single-input-text" name="search" placeholder="جستجو کنید...">
             <button type="submit" class="single-input-button">جستجو</button>
@@ -39,7 +44,9 @@
         </form>
 
         <div class="footer-info flex-80-row-container">
-            <a href="index.html"><img class="footer-logo" src="{% static 'images/logo-full.png' %}" alt="logo"></a>
+            <a href="{% url 'index' %}">
+                <img class="footer-logo" src="{% static 'images/logo-full.png' %}" alt="logo">
+            </a>
             <div>
                 <h4>درباره ما</h4>
                 <hr>

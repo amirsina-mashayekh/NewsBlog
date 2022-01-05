@@ -1,10 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'News/main-layout.html' %}
+{% block body %}
+    <section class="brief-news-section">
+        <div class="brief-news-container flex-80-row-container">
+            <div class="main-content">
+                <div class="brief-news-list">
+                    {% for post in latest_news %}
+                        <div class="news-preview-container box-shadow-5 rounded-corner-8">
+                            <a href="{% url 'full_news' post.id %}">
+                                <img src="{{ post.image.url }}" alt="pic"/>
+                            </a>
+                            <div>
+                                <a href="{% url 'full_news' post.id %}">
+                                    <h3>تیتر خبر</h3>
+                                </a>
+                                <p>
+                                    {{ post.article|striptags|truncatewords:17 }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-</body>
-</html>
+            <div class="left-bar">
+                <div class="popular-news-container rounded-corner-8 box-shadow-5">
+                    <a href="full-news.html"><img src="images/example-image.jpg" alt="pic"/></a>
+                    <div>
+                        <a href="full-news.html"><h3>تیتر</h3></a>
+                        <p>
+                            لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و...
+                        </p>
+                    </div>
+                    <div class="views-count">۱۲۳۴۵۶۷ بازدید</div>
+                </div>
+                <iframe title="ad" src="" class="ad-container rounded-corner-8 box-shadow-5">
+                    Here should be some annoying ads!
+                </iframe>
+            </div>
+        </div>
+    </section>
+{% endblock %}
