@@ -1,0 +1,126 @@
+{% extends 'News/main-layout.html' %}
+{% block body %}
+    <section class="news-list-section">
+        <div class="flex-80-row-container">
+            <div class="main-content">
+                <div class="news-list">
+                    {% for post in page %}
+                        <div class="news-preview-container box-shadow-5 rounded-corner-8">
+                            <a href="{% url 'full_news' post.id %}">
+                                <img src="{{ post.image.url }}" alt="pic"/>
+                            </a>
+                            <div>
+                                <a href="{% url 'full_news' post.id %}">
+                                    <h3>{{ post.title }}</h3>
+                                </a>
+                                <p>{{ post.summary|safe }}</p>
+                                <span dir="ltr">{{ post.publish_date }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <h3>متاسفانه نتیجه‌ای مطابق با فیلترهای تنظیم شده یافت نشد.</h3>
+                    {% endfor %}
+                </div>
+                {% if page.paginator.count > 0 %}
+                    <div class="pagination">
+                    {% if page.has_previous %}
+                        <a href="{% url 'news_archive' %}?page={{ page.previous_page_number }}{{ filters }}"
+                           title="قبلی">
+                            &lt;
+                        </a>
+                    {% else %}
+                        <a href="#" title="قبلی" class="disabled">&lt;</a>
+                    {% endif %}
+
+                    {% for i in page.paginator.page_range %}
+                        {% if i == page.number %}
+                            <a href="#" class="active">{{ i }}</a>
+                        {% elif i >= page.number|add:-3 and i <= page.number|add:3 %}
+                            <a href="{% url 'news_archive' %}?page={{ i }}{{ filters }}">{{ i }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page.has_next %}
+                        <a href="{% url 'news_archive' %}?page={{ page.next_page_number }}{{ filters }}" title="بعدی">
+                            &gt;
+                        </a>
+                    {% else %}
+                        <a href="#" title="بعدی" class="disabled">&gt;</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="left-bar" style="margin-top: 20px">
+                <div class="box-shadow-5 rounded-corner-8" style="padding: 5px 10px">
+                    <form method="get" action="{% url 'news_archive' %}" style="padding-bottom: 10px">
+                        <h3>فیلترها</h3>
+                        <label>
+                            کلید واژه
+                            <input type="text" name="search" class="search-form-field"
+                                   value="{{ request.GET.search }}">
+                        </label>
+                        <label>
+                            از
+                            <input type="date" name="start_date" class="search-form-field"
+                                   value="{{ request.GET.start_date }}">
+                        </label>
+                        <label>
+                            تا
+                            <input type="date" name="end_date" class="search-form-field"
+                                   value="{{ request.GET.end_date }}">
+                        </label>
+                        <label>
+                            ترتیب بر اساس
+                            <select name="order" class="search-form-field">
+                                {% with request.GET.order as ord %}
+                                    <option value="-publish_date" {% if ord == '-publish_date' %}selected{% endif %}>
+                                        تاریخ (جدید به قدیمی)
+                                    </option>
+                                    <option value="publish_date" {% if ord == 'publish_date' %}selected{% endif %}>
+                                        تاریخ (قدیمی به جدید)
+                                    </option>
+                                    <option value="-visits" {% if ord == '-visits' %}selected{% endif %}>
+                                        تعداد بازدید (زیاد به کم)
+                                    </option>
+                                    <option value="visits" {% if ord == 'visits' %}selected{% endif %}>
+                                        تعداد بازدید (کم به زیاد)
+                                    </option>
+                                    <option value="-accepted_comments"
+                                            {% if ord == '-accepted_comments' %}selected{% endif %}>
+                                        تعداد نظرات (زیاد به کم)
+                                    </option>
+                                    <option value="accepted_comments"
+                                            {% if ord == 'accepted_comments' %}selected{% endif %}>
+                                        تعداد نظرات (کم به زیاد)
+                                    </option>
+                                {% endwith %}
+                            </select>
+                        </label>
+                        <label>
+                            دسته بندی
+                            <select name="category" class="search-form-field">
+                                <option value="" {% if not request.GET.category %}selected{% endif %}>
+                                    همه
+                                </option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.url_name }}"
+                                            {% if request.GET.category == cat.url_name %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                        <button type="submit" class="search-form-field" style="margin-top: 15px">جستجو</button>
+                    </form>
+                </div>
+
+                {% for ad in ads %}
+                    <iframe title="{{ ad.provider }}" src="{{ ad.url }}"
+                            class="ad-container rounded-corner-8 box-shadow-5">
+                        Here should be some annoying ads!
+                    </iframe>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

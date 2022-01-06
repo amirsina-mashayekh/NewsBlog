@@ -28,8 +28,8 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="posts")
     importance = models.SmallIntegerField(default=0)
-    publishDate = models.DateTimeField(default=datetime.now)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="posts")
+    publish_date = models.DateTimeField(default=datetime.now)
+    category = models.ManyToManyField(Category, blank=True, related_name="posts")
     image = models.ImageField()
     article = RichTextField()
     visits = models.PositiveIntegerField(default=0)
@@ -44,7 +44,7 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.id}, " \
                f"{textwrap.shorten(self.title, width=50, placeholder='...')}, " \
-               f"{self.publishDate.strftime('%Y-%m-%d %H:%M:%S')}, " \
+               f"{self.publish_date.strftime('%Y-%m-%d %H:%M:%S')}, " \
                f"{self.author.last_name}, {self.author.first_name}"
 
     def save(self, *args, **kwargs):
@@ -73,7 +73,7 @@ class Comment(models.Model):
     text = models.TextField(max_length=2000)
     is_accepted = models.BooleanField(default=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    replied_on = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, related_name="replies")
+    replied_on = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True, related_name="replies")
 
     def __str__(self):
         return f"{self.id}, " \

@@ -21,15 +21,14 @@
             <a class="navbar-item {% if url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">
                 صفحه اصلی
             </a>
-            <a class="navbar-item {% if url_name == 'news_list' %}active{% endif %}" href="{% url 'news_list' 1 %}">
-                آخرین اخبار
+            <a class="navbar-item {% if url_name == 'news_archive' %}active{% endif %}" href="{% url 'news_archive' %}">
+                آرشیو اخبار
             </a>
         {% endwith %}
         <a class="navbar-item" href="login.html">
             ورود / عضویت
         </a>
-        <form class="search-form" method="post" action="#">
-            {% csrf_token %}
+        <form class="search-form" method="get" action="{% url 'news_archive' %}">
             <input type="text" class="single-input-text" name="search" placeholder="جستجو کنید...">
             <button type="submit" class="single-input-button">جستجو</button>
         </form>
