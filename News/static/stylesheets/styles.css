@@ -155,6 +155,10 @@ a:hover {
     width: 35%;
 }
 
+.important-news-list .news-preview-container {
+    height: 125px;
+}
+
 @media screen and (max-width: 975px) {
     .important-news-list {
         display: none;
@@ -169,13 +173,12 @@ a:hover {
     display: grid;
     grid-template-columns: 40% auto;
     padding-left: 20px;
-    text-align: justify;
     border-top-right-radius: 3px !important;
     border-bottom-right-radius: 3px !important;
     overflow: hidden;
 }
 
-.news-preview-container > a {
+.news-preview-container a {
     overflow: hidden;
 }
 
@@ -183,11 +186,13 @@ a:hover {
     padding-right: 5px;
 }
 
-.news-preview-container div h3 {
-    margin: 5px;
+.news-preview-container h4,
+.news-preview-container h3 {
+    margin: 5px 10px 0 0;
+    text-align: right;
 }
 
-.news-preview-container > div p {
+.news-preview-container p {
     font-size: 0.875rem;
 }
 
@@ -218,6 +223,7 @@ a:hover {
 .brief-news-list .news-preview-container {
     width: 45%;
     margin: 5px 2px;
+    height: 110px;
 }
 
 @media screen and (max-width: 800px) {
@@ -228,7 +234,9 @@ a:hover {
 
 .left-bar {
     width: 25%;
-    align-items: center;
+    height: fit-content;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 @media screen and (max-width: 975px) {

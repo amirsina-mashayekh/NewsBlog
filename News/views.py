@@ -1,32 +1,48 @@
+import datetime
+import random
+
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 
 from News.models import Post, Ad
 
 
-SliderNewsCount = 0
-LatestNewsCount = 10
-PopularNewsCount = 0
+ImportantNewsCount = 3
+LatestNewsCount = 6
+PopularNewsCount = 6
 NewsPerPage = 12
-AdsCount = 2
+AdsCount = 3
 
 
 def index(request):
-    slider_news = Post.objects.order_by('-publishDate', '-importance', '-visits')[:SliderNewsCount]
+    important_news = Post.objects.order_by('-publishDate__day', '-importance', '-visits')[:ImportantNewsCount]
+    for news in important_news:
+        news.summary = news.GetSummary(75)
 
+    most_popular_news = Post.objects.order_by('-visits')\
+        .filter(publishDate__month=datetime.datetime.now().month)[0]
+    most_popular_news.summary = most_popular_news.GetSummary(100)
     popular_news = Post.objects.order_by('-visits') \
-                       .exclude(id__in=slider_news)[:PopularNewsCount]
+                       .exclude(id__in=important_news) \
+                       .exclude(id=most_popular_news.id)[:PopularNewsCount]
+    for news in popular_news:
+        news.summary = news.GetSummary(50)
 
     latest_news = Post.objects.order_by('-publishDate') \
-                      .exclude(id__in=slider_news)  \
-                      .exclude(id__in=popular_news)[:LatestNewsCount]
+                      .exclude(id__in=important_news)  \
+                      .exclude(id__in=popular_news) \
+                      .exclude(id=most_popular_news.id)[:LatestNewsCount]
+    for news in latest_news:
+        news.summary = news.GetSummary(50)
 
-    ads = Ad.objects.all()[:AdsCount]
+    ads = list(Ad.objects.all()[:AdsCount])
+    random.shuffle(ads)
 
     return render(request, 'News/index.html', context={
-        'slider_news': slider_news,
+        'important_news': important_news,
         'latest_news': latest_news,
         'popular_news': popular_news,
+        'most_popular_news': most_popular_news,
         'ads': ads,
     })
 

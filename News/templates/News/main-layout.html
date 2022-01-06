@@ -29,6 +29,7 @@
             ورود / عضویت
         </a>
         <form class="search-form" method="post" action="#">
+            {% csrf_token %}
             <input type="text" class="single-input-text" name="search" placeholder="جستجو کنید...">
             <button type="submit" class="single-input-button">جستجو</button>
         </form>
@@ -39,6 +40,7 @@
 
     <footer>
         <form class="subscription-form" method="post" action="#">
+            {% csrf_token %}
             <input type="email" class="single-input-text" name="email" placeholder="آدرس ایمیل" dir="ltr">
             <button type="submit" class="single-input-button">اشتراک در خبرنامه</button>
         </form>

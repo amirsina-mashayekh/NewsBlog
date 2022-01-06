@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.db import models
+from django.template.defaultfilters import striptags
 
 
 class Category(models.Model):
@@ -18,6 +19,9 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "categories"
+
+    def __str__(self):
+        return f"{self.name} ({self.url_name})"
 
 
 class Post(models.Model):
@@ -29,6 +33,13 @@ class Post(models.Model):
     image = models.ImageField()
     article = RichTextField()
     visits = models.PositiveIntegerField(default=0)
+
+    def GetSummary(self, max_length: int):
+        paragraphs = str(striptags(self.article)).splitlines()
+        first_paragraph = ''
+        if len(paragraphs) > 0:
+            first_paragraph = paragraphs[0]
+        return textwrap.shorten(first_paragraph, max_length, placeholder='...')
 
     def __str__(self):
         return f"{self.id}, " \
@@ -74,4 +85,7 @@ class Comment(models.Model):
 
 class Ad(models.Model):
     provider = models.CharField(max_length=50)
-    url = models.URLField()
+    url = models.URLField(blank=True)
+
+    def __str__(self):
+        return str(self.provider)

@@ -1,8 +1,45 @@
 {% extends 'News/main-layout.html' %}
 {% block body %}
+    <section class="important-news-section">
+        <div class="flex-80-row-container">
+            <div class="most-important-news box-shadow-5 rounded-corner-8">
+                {% with important_news.0 as post %}
+                <a href="{% url 'full_news' post.id %}">
+                    <img src="{{ post.image.url }}" alt="pic"/>
+                </a>
+                <a href="{% url 'full_news' post.id %}">
+                    <h2>{{ post.title }}</h2>
+                </a>
+                {% endwith %}
+            </div>
+
+            <div class="important-news-list">
+                {% for post in important_news %}
+                    {% if forloop.counter != 1 %}
+                        <div class="news-preview-container box-shadow-5 rounded-corner-8">
+                            <a href="{% url 'full_news' post.id %}">
+                                <img src="{{ post.image.url }}" alt="pic"/>
+                            </a>
+                            <div>
+                                <a href="{% url 'full_news' post.id %}">
+                                    <h3>{{ post.title }}</h3>
+                                </a>
+                                {% if post.title|length < 28 %}
+                                    <p>{{ post.summary|safe }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
     <section class="brief-news-section">
         <div class="brief-news-container flex-80-row-container">
             <div class="main-content">
+                <h2>آخرین اخبار</h2>
+                <hr>
                 <div class="brief-news-list">
                     {% for post in latest_news %}
                         <div class="news-preview-container box-shadow-5 rounded-corner-8">
@@ -11,11 +48,31 @@
                             </a>
                             <div>
                                 <a href="{% url 'full_news' post.id %}">
-                                    <h3>تیتر خبر</h3>
+                                    <h4>{{ post.title }}</h4>
                                 </a>
-                                <p>
-                                    {{ post.article|striptags|truncatewords:17 }}
-                                </p>
+                                {% if post.title|length < 30 %}
+                                    <p>{{ post.summary|safe }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <h2>پر بازدیدترین‌ها</h2>
+                <hr>
+                <div class="brief-news-list">
+                    {% for post in popular_news %}
+                        <div class="news-preview-container box-shadow-5 rounded-corner-8">
+                            <a href="{% url 'full_news' post.id %}">
+                                <img src="{{ post.image.url }}" alt="pic"/>
+                            </a>
+                            <div>
+                                <a href="{% url 'full_news' post.id %}">
+                                    <h4>{{ post.title }}</h4>
+                                </a>
+                                {% if post.title|length < 28 %}
+                                    <p>{{ post.summary|safe }}</p>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}
@@ -24,18 +81,25 @@
 
             <div class="left-bar">
                 <div class="popular-news-container rounded-corner-8 box-shadow-5">
-                    <a href="full-news.html"><img src="images/example-image.jpg" alt="pic"/></a>
+                    <a href="{% url 'full_news' most_popular_news.id %}">
+                        <img src="{{ most_popular_news.image.url }}" alt="pic"/>
+                    </a>
                     <div>
-                        <a href="full-news.html"><h3>تیتر</h3></a>
+                        <a href="{% url 'full_news' most_popular_news.id %}">
+                            <h3>{{ most_popular_news.title }}</h3>
+                        </a>
                         <p>
-                            لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و...
+                            {{ most_popular_news.summary|safe }}
                         </p>
                     </div>
-                    <div class="views-count">۱۲۳۴۵۶۷ بازدید</div>
+                    <div class="views-count">{{ most_popular_news.visits }} بازدید</div>
                 </div>
-                <iframe title="ad" src="" class="ad-container rounded-corner-8 box-shadow-5">
-                    Here should be some annoying ads!
-                </iframe>
+                {% for ad in ads %}
+                    <iframe title="{{ ad.provider }}" src="{{ ad.url }}"
+                            class="ad-container rounded-corner-8 box-shadow-5">
+                        Here should be some annoying ads!
+                    </iframe>
+                {% endfor %}
             </div>
         </div>
     </section>
