@@ -29,7 +29,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="posts")
     importance = models.SmallIntegerField(default=0)
     publish_date = models.DateTimeField(default=datetime.now)
-    category = models.ManyToManyField(Category, blank=True, related_name="posts")
+    categories = models.ManyToManyField(Category, blank=True, related_name="posts")
     image = models.ImageField()
     article = RichTextField()
     visits = models.PositiveIntegerField(default=0)

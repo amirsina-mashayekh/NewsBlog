@@ -450,6 +450,7 @@ footer {
 
 .left-bar .other-news-list {
     padding: 8px;
+    text-align: justify;
 }
 
 .full-news-section {
@@ -458,6 +459,31 @@ footer {
 
 .full-news-section .flex-80-row-container {
     justify-content: space-between;
+}
+
+.news-meta {
+    background: #e5e5e5;
+    border-radius: 5px;
+    box-shadow: 0 2px 2px #ddd;
+    font-size: 0.8rem;
+}
+
+.news-meta ul {
+    padding: 0;
+}
+
+.news-meta ul li {
+    display: inline-block;
+    padding: 5px;
+    border-left: #F0F0F0 1px solid;
+}
+
+.news-meta-title {
+    color: #AAA;
+}
+
+.news-meta-text {
+    color: dimgray;
 }
 
 .full-news-container p {

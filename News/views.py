@@ -90,7 +90,7 @@ def NewsArchive(request):
 
     categories = Category.objects.all()
     if category and categories.filter(url_name=category).exists():
-        news = news.filter(category__url_name=category)
+        news = news.filter(categories__url_name=category)
 
     filters = ''
     if order != '-publish_date':
@@ -122,4 +122,21 @@ def NewsArchive(request):
 
 def FullNews(request, news_id: int):
     post = get_object_or_404(Post, id=news_id)
-    return render(request, 'News/full-news.html', {'post': post})
+    post.visits += 1
+    post.save()
+
+    category: Category = post.categories.first()
+    if category:
+        other_posts = category.posts.order_by('-publish_date')[:10]
+    else:
+        other_posts = Post.objects.order_by('-publish_date')[:10]
+
+    ads = list(Ad.objects.all()[:AdsCount])
+    random.shuffle(ads)
+
+    return render(request, 'News/full-news.html', context={
+        'post': post,
+        'category': category,
+        'other_posts': other_posts,
+        'ads': ads,
+    })

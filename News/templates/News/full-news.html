@@ -1,10 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'News/main-layout.html' %}
+{% block title %}{{ post.title }} - {% endblock %}
+{% block body %}
+    <section class="full-news-section">
+        <div class="flex-80-row-container">
+            <div class="main-content">
+                <div class="full-news-container">
+                    <div class="news-meta">
+                        <ul>
+                            <li>
+                                <span class="news-meta-text">
+                                    {{ post.publish_date }}
+                                </span>
+                            </li>
+                            <li>
+                                <span class="news-meta-title">نویسنده:</span>
+                                <span class="news-meta-text">
+                                    {{ post.author.first_name }} {{ post.author.last_name }}
+                                    (کد {{ post.author.id }})
+                                </span>
+                            </li>
+                            {% if category %}
+                                <li>
+                                <span class="news-meta-title">
+                                    دسته‌بندی:
+                                </span>
+                                <span class="news-meta-text">
+                                    <a href="{% url 'news_archive' %}?category={{ post.categories.first.url_name }}">
+                                        {{ post.categories.first.name }}
+                                    </a>
+                                </span>
+                            </li>
+                            {% endif %}
+                            <li>
+                                <span class="news-meta-text">
+                                    {{ post.visits }} بازدید
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <h1>{{ post.title }}</h1>
+                    <img class="news-main-image" src="{{ post.image.url }}" alt="pic">
+                    {{ post.article|safe }}
+                </div>
+                {% for comment in post.comments.all %}
+                    <div>{{ comment.text }}</div>
+                {% endfor %}
+            </div>
+            <div class="left-bar" style="margin-top: 15px">
+                <div class="other-news-list box-shadow-5 rounded-corner-8">
+                    <h3>
+                        آخرین اخبار
+                        {% if category %}{{ category.name }}{% endif %}
+                    </h3>
+                    <hr>
+                    {% for post in other_posts %}
+                        <a href="{% url 'full_news' post.id %}">
+                            <h5 class="other-news">{{ post.title }}</h5>
+                        </a>
+                        <hr>
+                    {% endfor %}
+                </div>
 
-</body>
-</html>
+                {% for ad in ads %}
+                    <iframe title="{{ ad.provider }}" src="{{ ad.url }}"
+                            class="ad-container rounded-corner-8 box-shadow-5">
+                        Here should be some annoying ads!
+                    </iframe>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
