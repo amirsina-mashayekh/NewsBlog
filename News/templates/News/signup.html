@@ -1,10 +1,55 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html lang="fa" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link type="text/css" rel="stylesheet" href="{% static 'stylesheets/styles.css' %}">
+        <title>ثبت نام - بلاگ اخبار</title>
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+        <script>
+            window.onload = function() {
+                // Remove class to enable transitions
+                document.querySelector("body").classList.remove("prevent-transition-trigger");
+            };
+        </script>
+    </head>
 
-</body>
+    <body class="prevent-transition-trigger">
+        <div class="form-page-form-container">
+            <h1 class="form-page-header">ایجاد حساب کاربری</h1>
+            <div class="box-shadow-5 rounded-corner-8">
+                <form method="post" action="{% url 'signup' %}">
+                    {% csrf_token %}
+                    {% if error %}
+                        <h4 style="color: red; margin-top: 0">
+                            {{ error }}
+                        </h4>
+                    {% endif %}
+                    <label for="firstname"><b>نام</b></label>
+                    <input type="text" class="form-page-fields" name="firstname" value="{{ firstname }}" required>
+
+                    <label for="lastname"><b>نام خانوادگی</b></label>
+                    <input type="text" class="form-page-fields" name="lastname" value="{{ lastname }}" required>
+
+                    <label for="email"><b>آدرس ایمیل</b></label>
+                    <input type="email" class="form-page-fields" name="email" value="{{ email }}" required>
+
+                    <label for="username"><b>نام کاربری</b></label>
+                    <input type="text" class="form-page-fields" name="username" value="{{ username }}" required>
+
+                    <label for="password"><b>کلمه عبور</b></label>
+                    <input type="password" class="form-page-fields" name="password1" minlength="8" required>
+
+                    <label for="password-repeat"><b>تکرار کلمه عبور</b></label>
+                    <input type="password" class="form-page-fields" name="password2" required>
+
+                    <button type="submit">ایجاد حساب کاربری</button>
+                </form>
+                <div><a href="{% url 'login' %}">ورود به حساب کاربری</a></div>
+                <div><a href="{% url 'index' %}">بازگشت به صفحه اصلی</a></div>
+            </div>
+        </div>
+    </body>
 </html>

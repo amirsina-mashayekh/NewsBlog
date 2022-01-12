@@ -1,10 +1,43 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html lang="fa" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link type="text/css" rel="stylesheet" href="{% static 'stylesheets/styles.css' %}">
+        <title>ورود - بلاگ اخبار</title>
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+        <script>
+            window.onload = function() {
+                // Remove class to enable transitions
+                document.querySelector("body").classList.remove("prevent-transition-trigger");
+            };
+        </script>
+    </head>
 
-</body>
+    <body class="prevent-transition-trigger">
+        <div class="form-page-form-container">
+            <h1 class="form-page-header">ورود به حساب کاربری</h1>
+            <div class="box-shadow-5 rounded-corner-8">
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    {% if login_failed %}
+                        <h4 style="color: red; margin-top: 0">
+                            نام کاربری یا کلمه عبور اشتباه است.
+                        </h4>
+                    {% endif %}
+                    <label for="username"><b>نام کاربری</b></label>
+                    <input type="text" class="form-page-fields" name="username" required value="{{ username }}">
+
+                    <label for="password"><b>کلمه عبور</b></label>
+                    <input type="password" class="form-page-fields" name="password" required>
+
+                    <button type="submit">ورود</button>
+                </form>
+                <div><a href="{% url 'signup' %}">ایجاد حساب کاربری</a></div>
+                <div><a href="{% url 'index' %}">بازگشت به صفحه اصلی</a></div>
+            </div>
+        </div>
+    </body>
 </html>

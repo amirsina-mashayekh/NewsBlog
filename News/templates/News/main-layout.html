@@ -25,9 +25,15 @@
                 آرشیو اخبار
             </a>
         {% endwith %}
-        <a class="navbar-item" href="login.html">
-            ورود / عضویت
-        </a>
+        {% if not request.user.is_authenticated %}
+            <a class="navbar-item" href="{% url 'login' %}">
+                ورود / عضویت
+            </a>
+        {% else %}
+            <a class="navbar-item" href="{% url 'logout' %}">
+                خروج
+            </a>
+        {% endif %}
         <form class="search-form" method="get" action="{% url 'news_archive' %}">
             <input type="text" class="single-input-text" name="search" placeholder="جستجو کنید...">
             <button type="submit" class="single-input-button">جستجو</button>

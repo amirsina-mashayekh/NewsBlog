@@ -1,9 +1,11 @@
 from datetime import datetime
 import random
 
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from News.models import Post, Ad, Category
 
@@ -140,3 +142,66 @@ def FullNews(request, news_id: int):
         'other_posts': other_posts,
         'ads': ads,
     })
+
+
+def SignUp(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        firstname = request.POST['firstname']
+        lastname = request.POST['lastname']
+        email = request.POST['email']
+        username = request.POST['username']
+        if form.is_valid():
+            form.save()
+            password = form.cleaned_data['password1']
+            user = authenticate(request, username=username, password=password)
+            user.first_name = firstname
+            user.last_name = lastname
+            user.email = email
+            user.save()
+            login(request, user)
+            return redirect('index')
+
+        else:
+            return render(request, 'News/signup.html', context={
+                'firstname': firstname,
+                'lastname': lastname,
+                'email': email,
+                'username': username,
+                'error': 'ثبت نام با خطا مواجه شد. لطفا دوباره امتحان کنید.',
+            })
+
+    return render(request, 'News/signup.html')
+
+
+def Login(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('index')
+        else:
+            return render(request, 'News/login.html', context={
+                'login_failed': True,
+                'username': username,
+            })
+
+    return render(request, 'News/login.html')
+
+
+def Logout(request):
+    if request.user.is_authenticated:
+        logout(request)
+    return redirect('index')
+
+
+def Profile(request):
+    pass
