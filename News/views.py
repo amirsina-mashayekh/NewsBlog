@@ -2,6 +2,7 @@ from datetime import datetime
 import random
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
@@ -18,6 +19,13 @@ PaginationCount = 7
 NewsOrders = ['publish_date', 'accepted_comments', 'visits', 'importance']
 for i in range(0, len(NewsOrders)):
     NewsOrders.append('-' + NewsOrders[i])
+
+
+def DateFromStrOrDefault(string: str, date_format: str, default: datetime) -> datetime:
+    try:
+        return datetime.strptime(string, date_format)
+    except ValueError:
+        return default
 
 
 def Index(request):
@@ -51,13 +59,6 @@ def Index(request):
         'most_popular_news': most_popular_news,
         'ads': ads,
     })
-
-
-def DateFromStrOrDefault(string: str, date_format: str, default: datetime) -> datetime:
-    try:
-        return datetime.strptime(string, date_format)
-    except ValueError:
-        return default
 
 
 def NewsArchive(request):
@@ -178,8 +179,9 @@ def SignUp(request):
 
 
 def Login(request):
+    redirect_path = request.GET.get('next', 'index')
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect(redirect_path)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -187,7 +189,7 @@ def Login(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            return redirect('index')
+            return redirect(redirect_path)
         else:
             return render(request, 'News/login.html', context={
                 'login_failed': True,
@@ -198,10 +200,7 @@ def Login(request):
 
 
 def Logout(request):
+    redirect_path = request.GET.get('next', 'index')
     if request.user.is_authenticated:
         logout(request)
-    return redirect('index')
-
-
-def Profile(request):
-    pass
+    return redirect(redirect_path)

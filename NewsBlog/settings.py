@@ -134,3 +134,5 @@ else:
     MEDIA_ROOT = '/media/NewsBlogMedia'
 
 MEDIA_URL = 'media/'
+
+LOGIN_URL = 'login'

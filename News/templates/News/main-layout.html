@@ -26,11 +26,11 @@
             </a>
         {% endwith %}
         {% if not request.user.is_authenticated %}
-            <a class="navbar-item" href="{% url 'login' %}">
+            <a class="navbar-item" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">
                 ورود / عضویت
             </a>
         {% else %}
-            <a class="navbar-item" href="{% url 'logout' %}">
+            <a class="navbar-item" href="{% url 'logout' %}?next={{ request.get_full_path|urlencode }}">
                 خروج
             </a>
         {% endif %}

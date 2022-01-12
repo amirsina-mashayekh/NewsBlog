@@ -20,7 +20,7 @@
         <div class="form-page-form-container">
             <h1 class="form-page-header">ورود به حساب کاربری</h1>
             <div class="box-shadow-5 rounded-corner-8">
-                <form method="post" action="{% url 'login' %}">
+                <form method="post" action="{{ request.get_full_path }}">
                     {% csrf_token %}
                     {% if login_failed %}
                         <h4 style="color: red; margin-top: 0">
