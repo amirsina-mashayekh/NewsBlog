@@ -7,8 +7,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 
-from News.models import Post, Ad, Category
+from News.models import Post, Ad, Category, Comment
 
 ImportantNewsCount = 3
 LatestNewsCount = 10
@@ -179,7 +180,10 @@ def SignUp(request):
 
 
 def Login(request):
-    redirect_path = request.GET.get('next', 'index')
+    redirect_path = request.GET.get('next')
+    if not redirect_path or redirect_path == reverse('index'):
+        redirect_path = 'profile'
+
     if request.user.is_authenticated:
         return redirect(redirect_path)
 
@@ -200,7 +204,22 @@ def Login(request):
 
 
 def Logout(request):
-    redirect_path = request.GET.get('next', 'index')
+    redirect_path = request.GET.get('next')
+    if not redirect_path or redirect_path == reverse('profile'):
+        redirect_path = 'index'
     if request.user.is_authenticated:
         logout(request)
     return redirect(redirect_path)
+
+
+@login_required
+def Profile(request):
+    user = request.user
+    latest_posts = user.posts.order_by('-publish_date')[:20]
+    latest_comments_on_posts = \
+        Comment.objects.filter(post__author_id=user.id, is_accepted=False)[:20]
+    return render(request, 'News/profile.html', context={
+        'user': user,
+        'posts': latest_posts,
+        'comments_on_posts': latest_comments_on_posts,
+    })

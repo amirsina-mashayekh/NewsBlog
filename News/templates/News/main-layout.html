@@ -24,16 +24,19 @@
             <a class="navbar-item {% if url_name == 'news_archive' %}active{% endif %}" href="{% url 'news_archive' %}">
                 آرشیو اخبار
             </a>
+            {% if not request.user.is_authenticated %}
+                <a class="navbar-item" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">
+                    ورود / عضویت
+                </a>
+            {% else %}
+                <a class="navbar-item {% if url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">
+                    حساب کاربری
+                </a>
+                <a class="navbar-item" href="{% url 'logout' %}?next={{ request.get_full_path|urlencode }}">
+                    خروج
+                </a>
+            {% endif %}
         {% endwith %}
-        {% if not request.user.is_authenticated %}
-            <a class="navbar-item" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">
-                ورود / عضویت
-            </a>
-        {% else %}
-            <a class="navbar-item" href="{% url 'logout' %}?next={{ request.get_full_path|urlencode }}">
-                خروج
-            </a>
-        {% endif %}
         <form class="search-form" method="get" action="{% url 'news_archive' %}">
             <input type="text" class="single-input-text" name="search" placeholder="جستجو کنید...">
             <button type="submit" class="single-input-button">جستجو</button>

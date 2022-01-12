@@ -1,0 +1,62 @@
+{% extends 'News/main-layout.html' %}
+{% block body %}
+    <style>
+        button {
+            font-size: 12px;
+        }
+    </style>
+
+    <div class="flex-80-row-container" style="flex-flow: column">
+        <h2>
+            حساب کاربری
+            {{ user.first_name }}
+            {{ user.last_name }}
+        </h2>
+
+        <a href="#">
+            <button style="font-size: 16px">
+                ارسال خبر جدید
+            </button>
+        </a>
+
+        <h3>آخرین اخبار شما</h3>
+        <ul>
+            {% for post in posts %}
+                <li>
+                    <a href="{% url 'full_news' post.id %}">{{ post.title }}</a>
+                    <a href="#">
+                        <button>ویرایش</button>
+                    </a>
+                    <a href="#">
+                        <button>حذف</button>
+                    </a>
+                </li>
+            {% empty %}
+                هیچ خبری توسط شما ثبت نشده است.
+            {% endfor %}
+        </ul>
+
+        <h3>آخرین نظرات تایید نشده</h3>
+        <ul>
+            {% for comment in comments_on_posts %}
+                <li>
+                    {{ comment.writer }} ({{ comment.email }})
+                    -
+                    <a href="{% url 'full_news' comment.post.id %}">
+                        {{ comment.post.title|truncatechars:30 }}
+                    </a>
+                    -
+                    {{ comment.text|truncatechars:50 }}
+                    <a href="#">
+                        <button>تایید</button>
+                    </a>
+                    <a href="#">
+                        <button>حذف</button>
+                    </a>
+                </li>
+            {% empty %}
+                هیچ نظر تایید نشده‌ای روی اخبار ثبت شده توسط شما وجود ندارد.
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
