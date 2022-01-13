@@ -22,28 +22,21 @@
             <div class="box-shadow-5 rounded-corner-8">
                 <form method="post" action="{% url 'signup' %}">
                     {% csrf_token %}
-                    {% if error %}
-                        <h4 style="color: red; margin-top: 0">
-                            {{ error }}
-                        </h4>
+
+                    {% if form.errors %}
+                        {% for field in form %}
+                            {% if field.errors %}
+                                <h4 style="color: red; margin: 0">
+                                    {{ field.label }} معتبر نیست.
+                                </h4>
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
-                    <label for="firstname"><b>نام</b></label>
-                    <input type="text" class="form-page-fields" name="firstname" value="{{ firstname }}" required>
 
-                    <label for="lastname"><b>نام خانوادگی</b></label>
-                    <input type="text" class="form-page-fields" name="lastname" value="{{ lastname }}" required>
-
-                    <label for="email"><b>آدرس ایمیل</b></label>
-                    <input type="email" class="form-page-fields" name="email" value="{{ email }}" required>
-
-                    <label for="username"><b>نام کاربری</b></label>
-                    <input type="text" class="form-page-fields" name="username" value="{{ username }}" required>
-
-                    <label for="password"><b>کلمه عبور</b></label>
-                    <input type="password" class="form-page-fields" name="password1" minlength="8" required>
-
-                    <label for="password-repeat"><b>تکرار کلمه عبور</b></label>
-                    <input type="password" class="form-page-fields" name="password2" required>
+                    {% for field in form %}
+                        <label for="firstname"><b>{{ field.label }}</b></label>
+                        {{ field.as_widget }}
+                    {% endfor %}
 
                     <button type="submit">ایجاد حساب کاربری</button>
                 </form>

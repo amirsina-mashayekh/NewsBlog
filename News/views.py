@@ -1,9 +1,8 @@
 from datetime import datetime
 import random
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
@@ -11,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from News.forms import PostEditForm
+from News.forms import PostEditForm, SignUpForm, LoginForm
 from News.models import Post, Ad, Category, Comment
 
 ImportantNewsCount = 3
@@ -154,32 +153,15 @@ def SignUp(request):
         return redirect('index')
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        firstname = request.POST['firstname']
-        lastname = request.POST['lastname']
-        email = request.POST['email']
-        username = request.POST['username']
+        form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            password = form.cleaned_data['password1']
-            user = authenticate(request, username=username, password=password)
-            user.first_name = firstname
-            user.last_name = lastname
-            user.email = email
-            user.save()
+            user = form.save()
             login(request, user)
-            return redirect('index')
+            return redirect('profile')
+    else:
+        form = SignUpForm()
 
-        else:
-            return render(request, 'News/signup.html', context={
-                'firstname': firstname,
-                'lastname': lastname,
-                'email': email,
-                'username': username,
-                'error': 'ثبت نام با خطا مواجه شد. لطفا دوباره امتحان کنید.',
-            })
-
-    return render(request, 'News/signup.html')
+    return render(request, 'News/signup.html', context={'form': form})
 
 
 def Login(request):
@@ -191,19 +173,15 @@ def Login(request):
         return redirect(redirect_path)
 
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user:
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
             return redirect(redirect_path)
-        else:
-            return render(request, 'News/login.html', context={
-                'login_failed': True,
-                'username': username,
-            })
+    else:
+        form = LoginForm()
 
-    return render(request, 'News/login.html')
+    return render(request, 'News/login.html', context={'form': form})
 
 
 def Logout(request):
@@ -230,7 +208,6 @@ def Profile(request):
 
 @login_required
 def NewPost(request):
-    error = False
     if request.method == 'POST':
         form = PostEditForm(request.POST, request.FILES)
         if form.is_valid():
@@ -239,19 +216,14 @@ def NewPost(request):
             post.save()
             form.save_m2m()
             return HttpResponseRedirect(reverse('full_news', args=[post.id]))
-        else:
-            error = True
+    else:
+        form = PostEditForm()
 
-    form = PostEditForm()
-    return render(request, 'News/post-editor.html', context={
-        'form': form,
-        'error': error,
-    })
+    return render(request, 'News/post-editor.html', context={'form': form})
 
 
 @login_required
 def EditPost(request, news_id: int):
-    error = False
     post = get_object_or_404(Post, id=news_id)
     if request.user != post.author:
         raise PermissionDenied
@@ -260,14 +232,10 @@ def EditPost(request, news_id: int):
         if form.is_valid():
             post = form.save()
             return HttpResponseRedirect(reverse('full_news', args=[post.id]))
-        else:
-            error = True
+    else:
+        form = PostEditForm(instance=post)
 
-    form = PostEditForm(instance=post)
-    return render(request, 'News/post-editor.html', context={
-        'form': form,
-        'error': error,
-    })
+    return render(request, 'News/post-editor.html', context={'form': form})
 
 
 @login_required
@@ -296,4 +264,3 @@ def DeleteComment(request, comment_id: int):
         raise PermissionDenied
     comment.delete()
     return redirect('profile')
-

@@ -2,7 +2,7 @@
 {% block body %}
     <div class="flex-80-row-container" style="flex-flow: column">
         <h2>ارسال خبر جدید</h2>
-        {% if error %}
+        {% if form.errors %}
             <h4 style="color: red">
                 خطا در ثبت خبر. لطفا دوباره امتحان کنید.
             </h4>

@@ -22,16 +22,15 @@
             <div class="box-shadow-5 rounded-corner-8">
                 <form method="post" action="{{ request.get_full_path }}">
                     {% csrf_token %}
-                    {% if login_failed %}
+                    {% if form.errors %}
                         <h4 style="color: red; margin-top: 0">
                             نام کاربری یا کلمه عبور اشتباه است.
                         </h4>
                     {% endif %}
-                    <label for="username"><b>نام کاربری</b></label>
-                    <input type="text" class="form-page-fields" name="username" required value="{{ username }}">
-
-                    <label for="password"><b>کلمه عبور</b></label>
-                    <input type="password" class="form-page-fields" name="password" required>
+                    {% for field in form %}
+                        <label for="firstname"><b>{{ field.label }}</b></label>
+                        {{ field.as_widget }}
+                    {% endfor %}
 
                     <button type="submit">ورود</button>
                 </form>
