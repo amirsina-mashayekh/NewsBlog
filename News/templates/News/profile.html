@@ -4,6 +4,9 @@
         button {
             font-size: 12px;
         }
+        h3 {
+            margin: 50px 0 0 0;
+        }
     </style>
 
     <div class="flex-80-row-container" style="flex-flow: column">
@@ -35,6 +38,10 @@
                 هیچ خبری توسط شما ثبت نشده است.
             {% endfor %}
         </ul>
+        {% if posts.count > 0 %}
+            جهت حذف یا ویرایش سایر اخبار، به صفحه خبر مراجعه کرده
+            و از گزینه‌های ویرایش یا حذف در بخش اطلاعات خبر استفاده کنید.
+        {% endif %}
 
         <h3>آخرین نظرات تایید نشده</h3>
         <ul>
@@ -47,10 +54,10 @@
                     </a>
                     -
                     {{ comment.text|truncatechars:50 }}
-                    <a href="#">
+                    <a href="{% url 'accept_comment' comment.id %}">
                         <button>تایید</button>
                     </a>
-                    <a href="#">
+                    <a href="{% url 'delete_comment' comment.id %}">
                         <button>حذف</button>
                     </a>
                 </li>

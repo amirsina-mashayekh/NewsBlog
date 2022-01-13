@@ -13,4 +13,6 @@ urlpatterns = [
     path('profile', views.Profile, name='profile'),
     path('logout', views.Logout, name='logout'),
     path('new-post', views.NewPost, name='new_post'),
+    path('comment/<int:comment_id>/accept', views.AcceptComment, name='accept_comment'),
+    path('comment/<int:comment_id>/delete', views.DeleteComment, name='delete_comment'),
 ]

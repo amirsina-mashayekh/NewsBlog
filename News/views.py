@@ -4,6 +4,7 @@ import random
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.http import HttpResponseRedirect
@@ -219,7 +220,7 @@ def Profile(request):
     user = request.user
     latest_posts = user.posts.order_by('-publish_date')[:20]
     latest_comments_on_posts = \
-        Comment.objects.filter(post__author_id=user.id, is_accepted=False)[:20]
+        Comment.objects.filter(post__author_id=user.id, is_accepted=False)[:30]
     return render(request, 'News/profile.html', context={
         'user': user,
         'posts': latest_posts,
@@ -252,6 +253,8 @@ def NewPost(request):
 def EditPost(request, news_id: int):
     error = False
     post = get_object_or_404(Post, id=news_id)
+    if request.user != post.author:
+        raise PermissionDenied
     if request.method == 'POST':
         form = PostEditForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
@@ -270,5 +273,27 @@ def EditPost(request, news_id: int):
 @login_required
 def DeletePost(request, news_id: int):
     post = get_object_or_404(Post, id=news_id)
+    if request.user != post.author:
+        raise PermissionDenied
     post.delete()
-    redirect('profile')
+    return redirect('profile')
+
+
+@login_required
+def AcceptComment(request, comment_id: int):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.user != comment.post.author:
+        raise PermissionDenied
+    comment.is_accepted = True
+    comment.save()
+    return redirect('profile')
+
+
+@login_required
+def DeleteComment(request, comment_id: int):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.user != comment.post.author:
+        raise PermissionDenied
+    comment.delete()
+    return redirect('profile')
+

@@ -36,6 +36,18 @@
                                     {{ post.visits }} بازدید
                                 </span>
                             </li>
+                        {% if request.user == post.author %}
+                            <li>
+                                <a href="{% url 'edit_news' post.id %}">
+                                    ویرایش
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'delete_news' post.id %}">
+                                    حذف
+                                </a>
+                            </li>
+                        {% endif %}
                         </ul>
                     </div>
                     <h1>{{ post.title }}</h1>

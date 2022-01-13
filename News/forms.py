@@ -1,7 +1,6 @@
-from ckeditor.widgets import CKEditorWidget
 from django import forms
 
-from News.models import Category, Post
+from News.models import Post
 
 
 class PostEditForm(forms.ModelForm):
