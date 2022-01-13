@@ -6,9 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
+from News.forms import PostEditForm
 from News.models import Post, Ad, Category, Comment
 
 ImportantNewsCount = 3
@@ -222,4 +224,20 @@ def Profile(request):
         'user': user,
         'posts': latest_posts,
         'comments_on_posts': latest_comments_on_posts,
+    })
+
+
+@login_required
+def NewPost(request):
+    if request.method == 'POST':
+        form = PostEditForm(request.POST, request.FILES)
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+        form.save_m2m()
+        return HttpResponseRedirect(reverse('full_news', args=[post.id]))
+
+    form = PostEditForm()
+    return render(request, 'News/post-editor.html', context={
+        'form': form,
     })

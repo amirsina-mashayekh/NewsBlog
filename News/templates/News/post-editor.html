@@ -1,0 +1,24 @@
+{% extends 'News/main-layout.html' %}
+{% block body %}
+    <div class="flex-80-row-container" style="flex-flow: column">
+        <h2>ارسال خبر جدید</h2>
+        <form action="{% url 'new_post' %}" method="post" enctype="multipart/form-data" style="margin-bottom: 25px">
+            {% csrf_token %}
+            {{ form.media }}
+            {% for field in form %}
+                <div style="margin-bottom: 20px">
+                    <label for="{{ field.name }}">
+                    {{ field.label }}
+                    </label>
+                    <div>
+                        {{ field.as_widget }}
+                    </div>
+                    {% if field.help_text %}
+                        <div style="color: gray; font-size: 0.7rem;">{{ field.help_text }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit">ارسال خبر</button>
+        </form>
+    </div>
+{% endblock %}

@@ -10,4 +10,5 @@ urlpatterns = [
     path('login', views.Login, name='login'),
     path('profile', views.Profile, name='profile'),
     path('logout', views.Logout, name='logout'),
+    path('new-post', views.NewPost, name='new_post'),
 ]
