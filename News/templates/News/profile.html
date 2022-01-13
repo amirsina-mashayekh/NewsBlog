@@ -24,10 +24,10 @@
             {% for post in posts %}
                 <li>
                     <a href="{% url 'full_news' post.id %}">{{ post.title }}</a>
-                    <a href="#">
+                    <a href="{% url 'edit_news' post.id %}">
                         <button>ویرایش</button>
                     </a>
-                    <a href="#">
+                    <a href="{% url 'delete_news' post.id %}">
                         <button>حذف</button>
                     </a>
                 </li>

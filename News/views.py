@@ -229,15 +229,46 @@ def Profile(request):
 
 @login_required
 def NewPost(request):
+    error = False
     if request.method == 'POST':
         form = PostEditForm(request.POST, request.FILES)
-        post = form.save(commit=False)
-        post.author = request.user
-        post.save()
-        form.save_m2m()
-        return HttpResponseRedirect(reverse('full_news', args=[post.id]))
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            form.save_m2m()
+            return HttpResponseRedirect(reverse('full_news', args=[post.id]))
+        else:
+            error = True
 
     form = PostEditForm()
     return render(request, 'News/post-editor.html', context={
         'form': form,
+        'error': error,
     })
+
+
+@login_required
+def EditPost(request, news_id: int):
+    error = False
+    post = get_object_or_404(Post, id=news_id)
+    if request.method == 'POST':
+        form = PostEditForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            post = form.save()
+            return HttpResponseRedirect(reverse('full_news', args=[post.id]))
+        else:
+            error = True
+
+    form = PostEditForm(instance=post)
+    return render(request, 'News/post-editor.html', context={
+        'form': form,
+        'error': error,
+    })
+
+
+@login_required
+def DeletePost(request, news_id: int):
+    post = get_object_or_404(Post, id=news_id)
+    post.delete()
+    redirect('profile')

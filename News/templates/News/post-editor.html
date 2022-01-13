@@ -2,7 +2,13 @@
 {% block body %}
     <div class="flex-80-row-container" style="flex-flow: column">
         <h2>ارسال خبر جدید</h2>
-        <form action="{% url 'new_post' %}" method="post" enctype="multipart/form-data" style="margin-bottom: 25px">
+        {% if error %}
+            <h4 style="color: red">
+                خطا در ثبت خبر. لطفا دوباره امتحان کنید.
+            </h4>
+        {% endif %}
+        <form action="{{ request.get_full_path }}" method="post" enctype="multipart/form-data"
+              style="margin-bottom: 25px">
             {% csrf_token %}
             {{ form.media }}
             {% for field in form %}
