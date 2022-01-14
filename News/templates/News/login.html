@@ -28,7 +28,7 @@
                         </h4>
                     {% endif %}
                     {% for field in form %}
-                        <label for="firstname"><b>{{ field.label }}</b></label>
+                        <label for="{{ field.id_for_label }}"><b>{{ field.label }}</b></label>
                         {{ field.as_widget }}
                     {% endfor %}
 

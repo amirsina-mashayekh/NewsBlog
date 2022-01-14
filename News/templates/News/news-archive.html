@@ -55,62 +55,10 @@
                 <div class="box-shadow-5 rounded-corner-8" style="padding: 5px 10px">
                     <form method="get" action="{% url 'news_archive' %}" style="padding-bottom: 10px">
                         <h3>فیلترها</h3>
-                        <label>
-                            کلید واژه
-                            <input type="text" name="search" class="search-form-field"
-                                   value="{{ request.GET.search }}">
-                        </label>
-                        <label>
-                            از
-                            <input type="date" name="start_date" class="search-form-field"
-                                   value="{{ request.GET.start_date }}">
-                        </label>
-                        <label>
-                            تا
-                            <input type="date" name="end_date" class="search-form-field"
-                                   value="{{ request.GET.end_date }}">
-                        </label>
-                        <label>
-                            ترتیب بر اساس
-                            <select name="order" class="search-form-field">
-                                {% with request.GET.order as ord %}
-                                    <option value="-publish_date" {% if ord == '-publish_date' %}selected{% endif %}>
-                                        تاریخ (جدید به قدیمی)
-                                    </option>
-                                    <option value="publish_date" {% if ord == 'publish_date' %}selected{% endif %}>
-                                        تاریخ (قدیمی به جدید)
-                                    </option>
-                                    <option value="-visits" {% if ord == '-visits' %}selected{% endif %}>
-                                        تعداد بازدید (زیاد به کم)
-                                    </option>
-                                    <option value="visits" {% if ord == 'visits' %}selected{% endif %}>
-                                        تعداد بازدید (کم به زیاد)
-                                    </option>
-                                    <option value="-accepted_comments"
-                                            {% if ord == '-accepted_comments' %}selected{% endif %}>
-                                        تعداد نظرات (زیاد به کم)
-                                    </option>
-                                    <option value="accepted_comments"
-                                            {% if ord == 'accepted_comments' %}selected{% endif %}>
-                                        تعداد نظرات (کم به زیاد)
-                                    </option>
-                                {% endwith %}
-                            </select>
-                        </label>
-                        <label>
-                            دسته بندی
-                            <select name="category" class="search-form-field">
-                                <option value="" {% if not request.GET.category %}selected{% endif %}>
-                                    همه
-                                </option>
-                                {% for cat in categories %}
-                                    <option value="{{ cat.url_name }}"
-                                            {% if request.GET.category == cat.url_name %}selected{% endif %}>
-                                        {{ cat.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </label>
+                        {% for field in form %}
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field.as_widget }}
+                        {% endfor %}
                         <button type="submit" class="search-form-field" style="margin-top: 15px">جستجو</button>
                     </form>
                 </div>

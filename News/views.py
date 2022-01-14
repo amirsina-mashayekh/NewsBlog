@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from News.forms import PostEditForm, SignUpForm, LoginForm
+from News.forms import PostEditForm, SignUpForm, LoginForm, AdvancedSearchForm
 from News.models import Post, Ad, Category, Comment
 
 ImportantNewsCount = 3
@@ -19,16 +19,6 @@ PopularNewsCount = 10
 NewsPerPage = 12
 AdsCount = 3
 PaginationCount = 7
-NewsOrders = ['publish_date', 'accepted_comments', 'visits', 'importance']
-for i in range(0, len(NewsOrders)):
-    NewsOrders.append('-' + NewsOrders[i])
-
-
-def DateFromStrOrDefault(string: str, date_format: str, default: datetime) -> datetime:
-    try:
-        return datetime.strptime(string, date_format)
-    except ValueError:
-        return default
 
 
 def Index(request):
@@ -65,18 +55,29 @@ def Index(request):
 
 
 def NewsArchive(request):
-    today = datetime.now()
-    start_date = DateFromStrOrDefault(request.GET.get('start_date', ''), '%Y-%m-%d', datetime.min)
-    end_date = DateFromStrOrDefault(request.GET.get('end_date', ''), '%Y-%m-%d', today) \
-        .replace(hour=23, minute=59, second=59, microsecond=999999)
+    form = AdvancedSearchForm(request.GET)
+    default_order = form['order'][0].data['value']
 
-    category = request.GET.get('category', '')
+    search_for = ''
+    start_date = None
+    end_date = None
+    order = ''
+    category = None
 
-    search_for = request.GET.get('search', '')
+    if form.is_valid():
+        search_for = form.cleaned_data['search']
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        order = form.cleaned_data['order']
+        category = form.cleaned_data['category']
 
-    order = request.GET.get('order', '')
-    if order not in NewsOrders:
-        order = '-publish_date'
+    today = datetime.now().date()
+    if not start_date:
+        start_date = datetime.min.date()
+    if not end_date:
+        end_date = today
+    if not order:
+        order = default_order
 
     page_number = request.GET.get('page', '')
 
@@ -94,21 +95,20 @@ def NewsArchive(request):
         (Q(title__icontains=search_for) | Q(article__icontains=search_for))
     )
 
-    categories = Category.objects.all()
-    if category and categories.filter(url_name=category).exists():
-        news = news.filter(categories__url_name=category)
+    if category:
+        news = news.filter(categories=category)
 
     filters = ''
-    if order != '-publish_date':
+    if order != default_order:
         filters += f"&order={order}"
-    if start_date != datetime.min:
+    if start_date != datetime.min.date():
         filters += f"&start_date={start_date.strftime('%Y-%m-%d')}"
-    if end_date.date() != today.date():
+    if end_date != today:
         filters += f"&end_date={end_date.strftime('%Y-%m-%d')}"
     if category:
-        f"&category={category}"
+        filters += f"&category={category.id}"
     if search_for:
-        f"&search={search_for}"
+        filters += f"&search={search_for}"
 
     paginator = Paginator(news, NewsPerPage)
     page = paginator.get_page(page_number)
@@ -121,7 +121,7 @@ def NewsArchive(request):
     return render(request, 'News/news-archive.html', context={
         'page': page,
         'filters': filters.rstrip('&'),
-        'categories': categories,
+        'form': form,
         'ads': ads,
     })
 

@@ -38,7 +38,8 @@
             {% endif %}
         {% endwith %}
         <form class="search-form" method="get" action="{% url 'news_archive' %}">
-            <input type="text" class="single-input-text" name="search" placeholder="جستجو کنید...">
+            <label for="search_bar" hidden>جستجو</label>
+            <input type="text" class="single-input-text" id="search_bar" name="search" placeholder="جستجو کنید...">
             <button type="submit" class="single-input-button">جستجو</button>
         </form>
     </div>
@@ -49,7 +50,8 @@
     <footer>
         <form class="subscription-form" method="post" action="#">
             {% csrf_token %}
-            <input type="email" class="single-input-text" name="email" placeholder="آدرس ایمیل" dir="ltr">
+            <label for="subscribe_email" hidden>اشتراک</label>
+            <input type="email" class="single-input-text" id="subscribe_email" name="email" placeholder="آدرس ایمیل" dir="ltr">
             <button type="submit" class="single-input-button">اشتراک در خبرنامه</button>
         </form>
 

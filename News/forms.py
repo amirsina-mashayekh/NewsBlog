@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
 from django.contrib.auth.models import User
 
-from News.models import Post
+from News.models import Post, Category
 
 
 class PostEditForm(forms.ModelForm):
@@ -27,7 +27,7 @@ class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs = {'class': 'form-page-fields'}
+            field.widget.attrs = {'class': 'form-page-field'}
     username = UsernameField(label='نام کاربری')
     password = forms.CharField(label='کلمه عبور', widget=forms.PasswordInput)
 
@@ -36,7 +36,7 @@ class SignUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs = {'class': 'form-page-fields'}
+            field.widget.attrs = {'class': 'form-page-field'}
         self.fields['first_name'].widget.attrs['style'] = 'direction: rtl !important;'
         self.fields['last_name'].widget.attrs['style'] = 'direction: rtl !important;'
     first_name = forms.CharField(max_length=50, label='نام')
@@ -63,3 +63,27 @@ class SignUpForm(UserCreationForm):
             password=self.cleaned_data['password1'],
         )
         return user
+
+
+class AdvancedSearchForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs = {'class': 'search-form-field'}
+            field.required = False
+    search = forms.CharField(label='کلیدواژه')
+    start_date = forms.DateField(label='از', widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(label='تا', widget=forms.DateInput(attrs={'type': 'date'}))
+    order = forms.ChoiceField(label='ترتیب بر اساس', choices=(
+        ('-publish_date', 'تاریخ (جدید به قدیمی)'),
+        ('publish_date', 'تاریخ (قدیمی به جدید)'),
+        ('-visits', 'تعداد بازدید (زیاد به کم)'),
+        ('visits', 'تعداد بازدید (کم به زیاد)'),
+        ('-accepted_comments', 'تعداد نظرات (زیاد به کم)'),
+        ('accepted_comments', 'تعداد نظرات (کم به زیاد)'),
+    ))
+    category = forms.ModelChoiceField(
+        label='دسته بندی',
+        queryset=Category.objects.all(),
+        empty_label='همه',
+    )

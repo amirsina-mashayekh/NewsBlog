@@ -15,13 +15,13 @@ from django.template.defaultfilters import striptags
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
-    url_name = models.CharField(max_length=50)
+    eng_name = models.CharField(max_length=50)
 
     class Meta:
         verbose_name_plural = "categories"
 
     def __str__(self):
-        return f"{self.name} ({self.url_name})"
+        return f"{self.name} ({self.eng_name})"
 
 
 class Post(models.Model):
