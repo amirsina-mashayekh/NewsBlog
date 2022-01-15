@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
 from django.contrib.auth.models import User
 
-from News.models import Post, Category
+from News.models import Post, Category, Comment
 
 
 class PostEditForm(forms.ModelForm):
@@ -87,3 +87,30 @@ class AdvancedSearchForm(forms.Form):
         queryset=Category.objects.all(),
         empty_label='همه',
     )
+
+
+class NewCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = [
+            'writer',
+            'email',
+            'text',
+            'post',
+            'replied_on',
+        ]
+        labels = {
+            'writer': 'نام',
+            'email': 'ایمیل',
+            'text': 'نظر شما',
+        }
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'maxlength': Comment._meta.get_field('text').max_length,
+                'rows': 5,
+                'cols': 75,
+            }),
+            'email': forms.EmailInput(attrs={'dir': 'ltr'}),
+            'post': forms.HiddenInput(),
+            'replied_on': forms.HiddenInput(),
+        }

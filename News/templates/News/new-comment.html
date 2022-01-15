@@ -1,0 +1,32 @@
+{% extends 'News/main-layout.html' %}
+{% block title %}ارسال نظر - {% endblock %}
+{% block body %}
+    <div class="flex-80-row-container" style="flex-flow: column; margin-top: 50px; margin-bottom: 50px;">
+        {% if form.errors %}
+            <h4 style="color: red">
+                خطا در ثبت نظر. لطفا اطلاعات وارد شده را بررسی نمایید.
+            </h4>
+        {% endif %}
+
+        <h3>
+            ارسال نظر برای
+            <a href="{% url 'full_news' post.id %}">{{ post.title }}</a>
+        </h3>
+        {% if replied_on %}
+            <div>
+                پاسخ به نظر {{ replied_on.writer }}:
+                <p style="font-size: 0.85rem;">{{ replied_on.text }}</p>
+            </div>
+        {% endif %}
+        <form action="{% url 'new_comment' post.id %}?replied_on={{ replied_on.id }}" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                {% if not field.is_hidden %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% endif %}
+                <div>{{ field.as_widget }}</div>
+            {% endfor %}
+            <button type="submit">ارسال نظر</button>
+        </form>
+    </div>
+{% endblock %}

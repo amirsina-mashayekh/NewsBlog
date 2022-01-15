@@ -54,8 +54,58 @@
                     <img class="news-main-image" src="{{ post.image.url }}" alt="pic">
                     {{ post.article|safe }}
                 </div>
-                {% for comment in post.comments.all %}
-                    <div>{{ comment.text }}</div>
+                <hr>
+
+                <h3>نظرات</h3>
+                <a href="{% url 'new_comment' post.id %}">
+                    <button>ارسال نظر جدید</button>
+                </a>
+
+                {% for comment in comments %}
+                    {% if comment.is_accepted or post.author == request.user %}
+                        <h4 style="margin-bottom: 0;">
+                            {{ comment.writer }}
+                        </h4>
+                        <p style="font-size: 0.85rem;">
+                            {{ comment.text }}
+                        </p>
+                        <a href="{% url 'new_comment' post.id %}?replied_on={{ comment.id }}">
+                            <button>پاسخ</button>
+                        </a>
+                        {% if request.user == post.author %}
+                            {% if not comment.is_accepted %}
+                                <a href="{% url 'accept_comment' comment.id %}">
+                                    <button style="background: limegreen">تایید</button>
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'delete_comment' comment.id %}">
+                                <button>حذف</button>
+                            </a>
+                        {% endif %}
+
+                        <div style="margin-right: 50px; margin-bottom: 20px;">
+                            {% for reply in comment.replies.all %}
+                                {% if reply.is_accepted or post.author == request.user %}
+                                    <h4 style="margin-bottom: 0;">
+                                        {{ reply.writer }}
+                                    </h4>
+                                    <p style="font-size: 0.85rem;">
+                                        {{ reply.text }}
+                                    </p>
+                                    {% if request.user == post.author %}
+                                        {% if not reply.is_accepted %}
+                                            <a href="{% url 'accept_comment' reply.id %}">
+                                                <button style="background: limegreen">تایید</button>
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'delete_comment' reply.id %}">
+                                            <button>حذف</button>
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
             <div class="left-bar" style="margin-top: 15px">

@@ -7,6 +7,7 @@ from io import BytesIO
 from PIL import Image
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.db import models
@@ -73,11 +74,22 @@ class Comment(models.Model):
     text = models.TextField(max_length=2000)
     is_accepted = models.BooleanField(default=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    replied_on = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True, related_name="replies")
+    replied_on = models.ForeignKey('Comment', on_delete=models.SET_NULL, null=True, blank=True, related_name="replies")
+
+    def save(self, *args, **kwargs):
+        level_check = self.replied_on is None or self.replied_on.replied_on is None
+        reply_post_equality_check = self.replied_on is None or self.replied_on.post == self.post
+        if not level_check:
+            raise ValidationError('Replies more than one level are not supported.')
+        elif not reply_post_equality_check:
+            raise ValidationError("'post' of reply is not equal to 'post' of comment.")
+        else:
+            super(Comment, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id}, " \
                f"{self.writer}, " \
+               f"{textwrap.shorten(self.post.title, width=25, placeholder='...')}" \
                f"{self.date.strftime('%Y-%m-%d %H:%M:%S')}, " \
                f"{('' if self.is_accepted else 'Not') + ' Accepted'}, " \
                f"{textwrap.shorten(self.text, width=50, placeholder='...')}"

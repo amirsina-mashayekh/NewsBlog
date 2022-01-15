@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from News.forms import PostEditForm, SignUpForm, LoginForm, AdvancedSearchForm
+from News.forms import PostEditForm, SignUpForm, LoginForm, AdvancedSearchForm, NewCommentForm
 from News.models import Post, Ad, Category, Comment
 
 ImportantNewsCount = 3
@@ -131,6 +131,8 @@ def FullNews(request, news_id: int):
     post.visits += 1
     post.save()
 
+    comments = post.comments.filter(replied_on=None)
+
     category: Category = post.categories.first()
     if category:
         other_posts = category.posts.order_by('-publish_date')[:10]
@@ -142,6 +144,7 @@ def FullNews(request, news_id: int):
 
     return render(request, 'News/full-news.html', context={
         'post': post,
+        'comments': comments,
         'category': category,
         'other_posts': other_posts,
         'ads': ads,
@@ -245,6 +248,35 @@ def DeletePost(request, news_id: int):
         raise PermissionDenied
     post.delete()
     return redirect('profile')
+
+
+def NewComment(request, news_id: int):
+    post = get_object_or_404(Post, id=news_id)
+
+    replied_on = None
+    replied_on_id = request.GET.get('replied_on')
+    if replied_on_id is not None:
+        try:
+            replied_on = get_object_or_404(Comment, id=int(replied_on_id))
+        except ValueError:
+            pass
+
+    if request.method == 'POST':
+        form = NewCommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('full_news', args=[post.id]))
+    else:
+        form = NewCommentForm(initial={
+            'post': post,
+            'replied_on': replied_on,
+        })
+
+    return render(request, 'News/new-comment.html', context={
+        'form': form,
+        'post': post,
+        'replied_on': replied_on,
+    })
 
 
 @login_required
