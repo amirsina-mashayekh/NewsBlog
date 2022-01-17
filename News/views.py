@@ -71,13 +71,15 @@ def NewsArchive(request):
         order = form.cleaned_data['order']
         category = form.cleaned_data['category']
 
-    today = datetime.now().date()
+    today = datetime.now()
     if not start_date:
-        start_date = datetime.min.date()
+        start_date = datetime.min
     if not end_date:
         end_date = today
     if not order:
         order = default_order
+
+    end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
     page_number = request.GET.get('page', '')
 
@@ -101,9 +103,9 @@ def NewsArchive(request):
     filters = ''
     if order != default_order:
         filters += f"&order={order}"
-    if start_date != datetime.min.date():
+    if start_date != datetime.min:
         filters += f"&start_date={start_date.strftime('%Y-%m-%d')}"
-    if end_date != today:
+    if end_date.date() != today.date():
         filters += f"&end_date={end_date.strftime('%Y-%m-%d')}"
     if category:
         filters += f"&category={category.id}"
